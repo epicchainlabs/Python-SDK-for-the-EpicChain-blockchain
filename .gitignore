@@ -1,0 +1,11 @@
+.coverage
+.idea/
+.vscode/
+.mypy_cache/
+dist/
+docs/site
+build/
+htmlcov/
+neo_mamba.egg-info/
+*__pycache__*
+venv/
