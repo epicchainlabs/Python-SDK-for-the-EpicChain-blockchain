@@ -28,7 +28,3 @@ and other type checkers like pyright not falling over this. The error can be dis
 [tool.mypy]
 disable_error_code = "func-returns-value"
 ```
-
-## How do I &lt;insert topic&gt;?
-Have a look at the examples on GitHub if the documentation doesn't cover your question. If the examples also don't answer
-your question then feel free to ask on GitHub or ask in #python on the [NEO Discord server](https://discord.gg/rvZFQ5382k).
