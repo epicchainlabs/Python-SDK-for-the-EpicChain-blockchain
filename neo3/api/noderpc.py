@@ -860,13 +860,13 @@ class JsonRpcTimeoutError(JsonRpcError):
         return self.message
 
 
-class NeoRpcClient(RPCClient):
+class EpicRpcClient(RPCClient):
     """
     Specialised RPC client for NEO's Node RPC API.
     """
 
     def __init__(self, host: str, **kwargs):
-        super(NeoRpcClient, self).__init__(host, **kwargs)
+        super(EpicRpcClient, self).__init__(host, **kwargs)
 
     async def _do_post(
         self,
@@ -882,7 +882,7 @@ class NeoRpcClient(RPCClient):
             "method": method,
             "params": params,
         }
-        response = await super(NeoRpcClient, self)._post(json)
+        response = await super(EpicRpcClient, self)._post(json)
         if "error" in response:
             raise JsonRpcError(**response["error"])
         return response["result"]
@@ -913,7 +913,7 @@ class NeoRpcClient(RPCClient):
         Examples:
             # prints all deployed
             prefix_contract_hash = b"\x0c"
-            async with api.NeoRpcClient("https://testnet1.neo.coz.io:443") as client:
+            async with api.EpicRpcClient("https://testnet1.neo.coz.io:443") as client:
                 async for k, v in client.find_states(CONTRACT_HASHES.MANAGEMENT, prefix_contract_hash):
                     print(k, v)
 

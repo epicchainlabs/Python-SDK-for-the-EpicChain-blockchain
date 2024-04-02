@@ -3,14 +3,14 @@ Classes to interact with the network such as a specialised RPC Client for NEO No
  with smart contracts over RPC.
 """
 from .noderpc import (
-    NeoRpcClient,
+    EpicRpcClient,
     JsonRpcError,
     StackItem,
     StackItemType,
 )
 
 __all__ = [
-    "NeoRpcClient",
+    "EpicRpcClient",
     "JsonRpcError",
     "StackItem",
     "StackItemType",

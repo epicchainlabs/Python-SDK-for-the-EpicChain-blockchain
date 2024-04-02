@@ -11,9 +11,9 @@ from neo3.wallet import utils
 JSON = Any
 
 
-class TestNeoRpcClient(unittest.IsolatedAsyncioTestCase):
+class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self) -> None:
-        self.client = api.NeoRpcClient("localhost")
+        self.client = api.EpicRpcClient("localhost")
         # CAREFULL THIS PATCHES ALL aiohttp CALLS!
         self.helper = aioresponses()
         self.helper.start()

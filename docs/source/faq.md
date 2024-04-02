@@ -8,9 +8,9 @@ The contract `deploy`, `update` and `destroy` functionality is already part of t
 all contract wrappers.
 
 ## Why is the native Ledger contract not wrapped?
-All information that can be obtained from the `Ledger` contract can also be obtained using the `NeoRpcClient`. In some 
+All information that can be obtained from the `Ledger` contract can also be obtained using the `EpicRpcClient`. In some 
 cases the `Ledger` contract returns even incomplete data. For example `Ledger.GetBlock` returns a `TrimmedBlock` without
-transactions as opposed to `NeoRpcClient.get_block()` which returns the complete block. The `Ledger` contract is really
+transactions as opposed to `EpicRpcClient.get_block()` which returns the complete block. The `Ledger` contract is really
 intended to be consumed by smart contracts.
 
 ## Why does the IJson interface consume and produce dictionaries?

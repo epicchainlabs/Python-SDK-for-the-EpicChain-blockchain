@@ -13,7 +13,7 @@ class TxBuilder:
     Transaction builder.
     """
 
-    def __init__(self, client: noderpc.NeoRpcClient, script: Optional[bytes] = None):
+    def __init__(self, client: noderpc.EpicRpcClient, script: Optional[bytes] = None):
         self.client = client
         self.tx = transaction.Transaction(
             version=0,

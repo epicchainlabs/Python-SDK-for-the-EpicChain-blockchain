@@ -232,7 +232,7 @@ class ChainFacade:
             signers:
             return_raw: whether to post process the execution result or not.
         """
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             res = await client.invoke_script(f.script, signers)
             if f.execution_processor is None or return_raw:
                 return res
@@ -272,7 +272,7 @@ class ChainFacade:
                            results.
         """
         delay, timeout = await self._get_receipt_time_values()
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             tx_id = await self.invoke_fast(
                 f,
                 signers=signers,
@@ -338,7 +338,7 @@ class ChainFacade:
         if system_fee > 0 and append_system_fee > 0:
             raise ValueError("system_fee and append_system_fee are mutually exclusive")
 
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             builder = txbuilder.TxBuilder(client, f.script)
             await builder.init()
 
@@ -414,7 +414,7 @@ class ChainFacade:
             `invoke_fast()` - does not wait for a receipt.
         """
         delay, timeout = await self._get_receipt_time_values()
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             tx_id = await self.invoke_fast(
                 f,
                 signers=signers,
@@ -481,7 +481,7 @@ class ChainFacade:
         )
 
         delay, timeout = await self._get_receipt_time_values()
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             receipt = await client.wait_for_transaction_receipt(
                 tx_id, timeout=timeout, retry_delay=delay
             )
@@ -601,13 +601,13 @@ class ChainFacade:
         """
         Estimate the gas price for calling the contract method.
         """
-        async with noderpc.NeoRpcClient(self.rpc_host) as client:
+        async with noderpc.EpicRpcClient(self.rpc_host) as client:
             res = await client.invoke_script(f.script, signers)
             return res.gas_consumed
 
     async def _get_receipt_time_values(self) -> tuple[float, float]:
         if self._receipt_retry_delay is None or self._receipt_timeout is None:
-            async with noderpc.NeoRpcClient(self.rpc_host) as client:
+            async with noderpc.EpicRpcClient(self.rpc_host) as client:
                 result = await client.get_version()
                 # 5 seems like a reasonable divider where on mainnet (with 15s blocks) at worst case
                 # the RPC server is queried 5 times.
