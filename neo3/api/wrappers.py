@@ -89,8 +89,8 @@ class ContractMethodResult(Generic[ReturnType]):
         pass
 
 
-_DEFAULT_MAINNET_RPC = "http://seed1.neo.org:10332"
-_DEFAULT_TESTNET_RPC = "http://seed1t5.neo.org:20332"
+_DEFAULT_MAINNET_RPC = "http://mainnet1-seed.epic-chain.org:10111"
+_DEFAULT_TESTNET_RPC = "http://mainnet2-seed.epic-chain.org:10111"
 
 SigningPair: TypeAlias = tuple[signing.SigningFunction, verification.Signer]
 

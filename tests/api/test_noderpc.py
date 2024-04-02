@@ -403,9 +403,9 @@ class TestNeoRpcClient(unittest.IsolatedAsyncioTestCase):
                 ],
                 "trusts": [],
                 "extra": {
-                    "Author": "NEO",
-                    "Email": "developer@neo.org",
-                    "Description": "This is a Neo3 Contract",
+                    "Author": "EpicChain",
+                    "Email": "devs@epic-chain.org",
+                    "Description": "This is a EpicChain Contract",
                 },
             },
         }
