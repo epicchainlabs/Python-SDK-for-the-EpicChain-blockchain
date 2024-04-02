@@ -24,7 +24,7 @@ async def example_transfer_neo(neoxp: shared.NeoExpress):
     )
 
     source = account.address
-    destination = "NUVaphUShQPD82yoXcbvFkedjHX6rUF7QQ"
+    destination = "XyPUJMm6PhmtvGM7D1NsYagEfyNbVT1NGB"
     # Dedicated Neo native contract wrapper
     neo = NeoToken()
     print("Calling transfer and waiting for receipt...")
@@ -46,7 +46,7 @@ async def example_transfer_other(neoxp: shared.NeoExpress):
     )
 
     source = account.address
-    destination = "NUVaphUShQPD82yoXcbvFkedjHX6rUF7QQ"
+    destination = "XyPUJMm6PhmtvGM7D1NsYagEfyNbVT1NGB"
 
     # Use the generic NEP17 class to wrap the token and create a similar interface as before
     # The contract hash is that of our sample Nep17 token which is deployed in our neoxpress setup

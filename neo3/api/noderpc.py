@@ -1,5 +1,5 @@
 """
-NEO RPC Node client and response classes.
+EpicChain RPC Node client and response classes.
 """
 from __future__ import annotations
 
@@ -406,7 +406,7 @@ class StackItem:
 
     def as_address(self) -> str:
         """
-        Unwrap as NEO3 address.
+        Unwrap as EpicChain address.
         """
         return walletutils.script_hash_to_address(self.as_uint160())
 
@@ -862,7 +862,7 @@ class JsonRpcTimeoutError(JsonRpcError):
 
 class EpicRpcClient(RPCClient):
     """
-    Specialised RPC client for NEO's Node RPC API.
+    Specialised RPC client for EpicChain's Node RPC API.
     """
 
     def __init__(self, host: str, **kwargs):
@@ -913,7 +913,7 @@ class EpicRpcClient(RPCClient):
         Examples:
             # prints all deployed
             prefix_contract_hash = b"\x0c"
-            async with api.EpicRpcClient("https://testnet1.neo.coz.io:443") as client:
+            async with api.EpicRpcClient("https://testnet5-seed.epic-chain.org:20111") as client:
                 async for k, v in client.find_states(CONTRACT_HASHES.MANAGEMENT, prefix_contract_hash):
                     print(k, v)
 
@@ -1030,7 +1030,7 @@ class EpicRpcClient(RPCClient):
 
     async def get_committee(self) -> tuple[cryptography.ECPoint, ...]:
         """
-        Fetch the public keys of the current NEO committee.
+        Fetch the public keys of the current EpicChian committee.
         """
         response = await self._do_post("getcommittee")
         return tuple(
@@ -1184,7 +1184,7 @@ class EpicRpcClient(RPCClient):
         Fetch the amount of unclaimed gas for the given address.
 
         Args:
-            address: a NEO address.
+            address: a EpicChain address.
         """
         result = await self._do_post("getunclaimedgas", [address])
         return int(result["unclaimed"])
@@ -1340,7 +1340,7 @@ class EpicRpcClient(RPCClient):
         Verify if the given address is valid for the network the node is running on.
 
         Args:
-            address: a NEO address.
+            address: a EpicChain address.
         """
         result = await self._do_post("validateaddress", [address])
         return result["isvalid"]
@@ -1368,7 +1368,7 @@ class EpicRpcClient(RPCClient):
 
             # return types are not included because ABI types like ARRAY cannot be properly translated e.g. the
             # following functions both have ARRAY as return type in the ABI but their actual response is very different
-            # 1. NeoToken.GetNextBlockValidators returns a list of serialized ECPoints
+            # 1. EpicChainToken.GetNextBlockValidators returns a list of serialized ECPoints
             # 2. ManagementContract.getContract a serialized ContractState (not even a list)
             print(f"def {method.name}(self{params})")
         print(" ")

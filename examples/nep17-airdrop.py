@@ -24,10 +24,10 @@ async def example_airdrop(neoxp: shared.NeoExpress):
     # Use the generic NEP17 class to wrap the token
     token = NEP17Contract(shared.coz_token_hash)
     balance = await facade.test_invoke(token.balance_of(account.address))
-    print(f"Current COZ token balance: {balance}")
+    print(f"Current token balance: {balance}")
 
     # First we have to mint the tokens to our own wallet
-    # We do this by sending NEO to the contract
+    # We do this by sending EpicChain to the contract
     # We increase the retry delay to match our local chain block production time
     neo = NeoToken()
     print("Minting once...", end="")
@@ -47,15 +47,15 @@ async def example_airdrop(neoxp: shared.NeoExpress):
     print(receipt.result)
 
     balance = await facade.test_invoke(token.balance_of(account.address))
-    print(f"New COZ token balance: {balance}")
+    print(f"New token balance: {balance}")
 
     # Now let's airdrop the tokens
     destination_addresses = [
-        "NWuHQdxabXPdC6vVwJhxjYELDQPqc1d4TG",
-        "NhVnpBxSRjkScZKHGzsEreYAMS1qRrNdaH",
-        "NanYZRm6m6sa6Z6F3RBRYSXqdpg5rZqxdZ",
-        "NUqLhf1p1vQyP2KJjMcEwmdEBPnbCGouVp",
-        "NKuyBkoGdZZSLyPbJEetheRhMjeznFZszf",
+        "XtxcQeNhLuNDucqAVynTwYBh2QHdDUyPzN",
+        "XciXUD25yEsuMcxpq1eGoEZyLbstM3N1KE",
+        "XsokdeQ3kXqsryRycSVd1cJ86tHJ8kn8uP",
+        "XxBHmJuzGu8vnUnbB7ZWXWrS37hypTPwtB",
+        "XkqcLP2QnBsHZnVnFxZ97fbsiEDAcB3bkZ",
     ]
     print("Airdropping 10 tokens and waiting for receipt")
     print(

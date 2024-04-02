@@ -1,15 +1,15 @@
 [project]
-name = "neo-mamba"
-description = "Python SDK for the NEO 3 blockchain"
+name = "epicchain-python-sdk"
+description = "Python SDK for the EpicChain blockchain"
 readme = "README.rst"
 requires-python = ">= 3.11.0,<= 3.13"
 license = { file = "LICENSE.md" }
-keywords = ["NEO", "NEO3", "blockchain", "SDK"]
+keywords = ["EpicChain", "blockchain", "SDK"]
 authors = [
-    { name = "Erik van den Brink", email = "erik@coz.io" },
+    { name = "xmoohad", email = "xmoohad@epic-chain.org" },
 ]
 maintainers = [
-    { name = "Erik van den Brink", email = "erik@coz.io" },
+    { name = "xmoohad", email = "xmoohad@epic-chain.or" },
 ]
 dynamic = ["version"]
 dependencies = [
@@ -47,9 +47,7 @@ docs = [
 ]
 
 [project.urls]
-repository = "https://github.com/CityOfZion/neo-mamba"
-documentation = "https://mamba.coz.io/"
-
+repository = "https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain"
 
 [build-system]
 requires = ["setuptools"]

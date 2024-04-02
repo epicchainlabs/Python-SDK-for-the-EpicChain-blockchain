@@ -52,8 +52,8 @@ async def example_airdrop(neoxp: shared.NeoExpress):
 
     # Now let's airdrop the NFTs
     destination_addresses = [
-        "NWuHQdxabXPdC6vVwJhxjYELDQPqc1d4TG",
-        "NhVnpBxSRjkScZKHGzsEreYAMS1qRrNdaH",
+        "Xy9pxEaPuHJFRD9MjVxA14vdARqKvxC3hJ",
+        "XhVKWczT2euGEhv67kezpKHGAn69Ngjk4r",
     ]
     print("Airdropping 1 NFT to each address and waiting for receipt...", end="")
     receipt = await facade.invoke(

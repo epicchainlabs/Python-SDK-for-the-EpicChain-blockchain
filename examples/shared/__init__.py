@@ -78,13 +78,13 @@ class NeoExpress:
             raise ValueError(f"Invalid executable: {full_path}")
 
     def initialize_with(self, batch_path: str):
-        print("executing neo-express batch...", end="")
+        print("executing private chain batch...", end="")
         cmd = f"{self.prog} batch -r {batch_path}"
         subprocess.run(shlex.split(cmd), check=True, stdout=subprocess.DEVNULL)
         print("done")
 
     def run(self):
-        print("starting neo-express...", end="")
+        print("starting private chain...", end="")
         cmd = f"{self.prog} run -i {self.config_path}"
 
         self._process = subprocess.Popen(
@@ -101,7 +101,7 @@ class NeoExpress:
                 if self._stop is True:
                     break
 
-                if "Neo express is running" in output:
+                if "EpicChain private chain is running" in output:
                     self._ready = True
 
                 if self.debug:
@@ -116,7 +116,7 @@ class NeoExpress:
         print("done")
 
     def stop(self):
-        print("stopping neo-express...", end="")
+        print("stopping epicchain private chain...", end="")
         # break out of the process_stdout loop
         self._stop = True
         self._process.kill()
