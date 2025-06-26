@@ -1,9 +1,3 @@
-Absolutely. Here's a **fully expanded**, high-quality technical overview of the **EpicChain Python SDK**, now featuring **multiple smart contract lifecycle examples** with **detailed Python code samples**, organized for developers to understand contract deployment, calling, updating, and destruction in practice.
-
-You can use this as a rich `README.md`, documentation page, or technical intro for SDK users.
-
----
-
 # EpicChain Python SDK
 
 ## Overview
@@ -238,6 +232,3 @@ For assistance, questions, or suggestions:
 
 Licensed under the **MIT License**. See [LICENSE](LICENSE) for full terms.
 
----
-
-**EpicChain Labs** — Delivering next-generation blockchain tools for developers, innovators, and the decentralized future.
