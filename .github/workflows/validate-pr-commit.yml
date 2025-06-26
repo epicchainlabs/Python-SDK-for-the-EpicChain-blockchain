@@ -56,7 +56,7 @@ jobs:
         with:
           options: '--check --target-version py311'
           version: '23.9.1'
-          src: "neo3/ examples/ tests/"
+          src: "epicchain/ examples/ tests/"
   type-checking:
     needs: setup
     runs-on: ubuntu-20.04

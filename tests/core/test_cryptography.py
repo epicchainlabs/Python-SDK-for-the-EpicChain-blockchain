@@ -1,9 +1,9 @@
 import unittest
 import binascii
 import hashlib
-from neo3crypto import mmh3_hash_bytes, mmh3_hash
-from neo3.core import types
-from neo3.core import cryptography as crypto
+from epicchaincrypto import mmh3_hash_bytes, mmh3_hash
+from epicchain.core import types
+from epicchain.core import cryptography as crypto
 
 
 class MerkleTreeTestCase(unittest.TestCase):
@@ -86,7 +86,6 @@ class BloomFilterTestCase(unittest.TestCase):
         self.assertEqual(expected_seeds, filter.seeds)
 
     def test_add_and_check(self):
-        # modelled after https://github.com/neo-project/neo/blob/982e69090f27c1415872536ce39aea22f0873467/neo.UnitTests/Cryptography/UT_BloomFilter.cs#L12
         elements = b"\x00\x01\x02\x03\x04"
         filter = crypto.BloomFilter(m=7, k=10, ntweak=123456)
         filter.add(elements)
@@ -118,8 +117,7 @@ class Murmur128test(unittest.TestCase):
         # disable docstring printing in test runner
         return None
 
-    def test_neo_cases(self):
-        # https://github.com/Liaojinghui/neo/blob/30f33d075502acd792f804ffcf84cce689255306/tests/neo.UnitTests/Cryptography/UT_Murmur128.cs
+    def test_epicchain_cases(self):
         self.assertEqual(
             bytes.fromhex("0bc59d0ad25fde2982ed65af61227a0e"),
             mmh3_hash_bytes("hello", 123),

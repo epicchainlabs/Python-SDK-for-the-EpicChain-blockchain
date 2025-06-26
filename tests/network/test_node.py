@@ -3,8 +3,8 @@ import logging
 import asyncio
 import unittest
 
-from neo3.network import node, message, capabilities, ipfilter
-from neo3.network.payloads import (
+from epicchain.network import node, message, capabilities, ipfilter
+from epicchain.network.payloads import (
     version,
     address,
     block,
@@ -14,15 +14,15 @@ from neo3.network.payloads import (
     transaction,
 )
 from copy import deepcopy
-from neo3 import network_logger
-from neo3.settings import settings
-from neo3.core import types
+from epicchain import network_logger
+from epicchain.settings import settings
+from epicchain.core import types
 from unittest import mock, IsolatedAsyncioTestCase
 from tests import helpers as test_helpers
 import platform
 
 
-class NeoNodeTestCase(IsolatedAsyncioTestCase):
+class EpicChainNodeTestCase(IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         if (
@@ -32,7 +32,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
             raise unittest.SkipTest(
                 "skipping these tests bcause something with socketpair is failing for 2.12\ninvestigate later"
             )
-        # network_logger = logging.getLogger("neo3.network")
+        # network_logger = logging.getLogger("epicchain.network")
         # network_logger.setLevel(logging.DEBUG)
         # stdio_handler = logging.StreamHandler()
         # network_logger.addHandler(stdio_handler)
@@ -46,7 +46,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
 
         cls.m_version = message.Message(
             msg_type=message.MessageType.VERSION,
-            payload=version.VersionPayload(1, "NEO3-MOCK-CLIENT", caps),
+            payload=version.VersionPayload(1, "epicchain-MOCK-CLIENT", caps),
         )
         cls.m_verack = message.Message(msg_type=message.MessageType.VERACK)
 
@@ -57,24 +57,24 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         settings.reset_settings_to_default()
-        network_logger = logging.getLogger("neo3.network")
+        network_logger = logging.getLogger("epicchain.network")
         network_logger.handlers.clear()
 
     def setUp(self) -> None:
         settings.reset_settings_to_default()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
         ipfilter.ipfilter.reset()
 
     async def test_connect_to(self):
         with self.assertRaises(ValueError) as context:
-            await node.NeoNode.connect_to()
+            await node.EpicChainNode.connect_to()
         self.assertIn(
             "host and port was not specified and no sock specified",
             str(context.exception),
         )
 
         with self.assertRaises(ValueError) as context:
-            await node.NeoNode.connect_to(host="123", socket=object())
+            await node.EpicChainNode.connect_to(host="123", socket=object())
         self.assertIn(
             "host/port and socket can not be specified at the same time",
             str(context.exception),
@@ -92,14 +92,14 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
             # hand-shake data
             loop.call_soon(w.send, self.m_version.to_array())
             loop.call_soon(w.send, self.m_verack.to_array())
-            n, _ = await node.NeoNode.connect_to(socket=r, _test_data=test_data)
+            n, _ = await node.EpicChainNode.connect_to(socket=r, _test_data=test_data)
         r.close()
         w.close()
         self.assertIn("Trying to connect to socket", log_context.output[0])
         self.assertIn(
-            f"Connected to NEO3-MOCK-CLIENT @ {host}:{port}: 0", log_context.output[2]
+            f"Connected to epicchain-MOCK-CLIENT @ {host}:{port}: 0", log_context.output[2]
         )
-        self.assertIsInstance(n, node.NeoNode)
+        self.assertIsInstance(n, node.EpicChainNode)
         await n.disconnect(address.DisconnectReason.SHUTTING_DOWN)
 
     async def test_connect_to_with_host_ip(self):
@@ -109,25 +109,25 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
 
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             with mock.patch.object(asyncio, "open_connection"):
-                _, _ = await node.NeoNode.connect_to(host, port)
+                _, _ = await node.EpicChainNode.connect_to(host, port)
         self.assertIn(f"Trying to connect to: {host}:{port}", log_context.output[0])
 
     async def test_connect_to_exceptions(self):
         with mock.patch.object(asyncio, "open_connection") as mocked_open_conn:
             mocked_open_conn.side_effect = asyncio.TimeoutError
-            node_instance, failure = await node.NeoNode.connect_to(socket=object())
+            node_instance, failure = await node.EpicChainNode.connect_to(socket=object())
             self.assertIsNone(node_instance)
             self.assertEqual("Timed out", failure[1])
 
         with mock.patch.object(asyncio, "open_connection") as mocked_open_conn:
             mocked_open_conn.side_effect = OSError("unreachable")
-            node_instance, failure = await node.NeoNode.connect_to(socket=object())
+            node_instance, failure = await node.EpicChainNode.connect_to(socket=object())
             self.assertIsNone(node_instance)
             self.assertEqual("Failed to connect for reason unreachable", failure[1])
 
         with mock.patch.object(asyncio, "open_connection") as mocked_open_conn:
             mocked_open_conn.side_effect = asyncio.CancelledError
-            node_instance, failure = await node.NeoNode.connect_to(socket=object())
+            node_instance, failure = await node.EpicChainNode.connect_to(socket=object())
             self.assertIsNone(node_instance)
             self.assertEqual("Cancelled", failure[1])
 
@@ -135,11 +135,11 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         addr1 = address.NetworkAddress(address="127.0.0.1:1111")
         addr1.set_state_dead()
         addr2 = address.NetworkAddress(address="127.0.0.1:2222")
-        node.NeoNode.addresses = [addr1, addr2]
-        result = node.NeoNode.get_address_new()
+        node.EpicChainNode.addresses = [addr1, addr2]
+        result = node.EpicChainNode.get_address_new()
         self.assertEqual(addr2, result)
 
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         addr = n._find_address_by_host_port("127.0.0.1:1111")
         self.assertEqual(addr1, addr)
         addr = n._find_address_by_host_port("127.0.0.1:3333")
@@ -151,7 +151,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
 
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             loop.call_soon(w.send, self.m_verack.to_array())
-            await node.NeoNode.connect_to(socket=r, _test_data=self.peername_data)
+            await node.EpicChainNode.connect_to(socket=r, _test_data=self.peername_data)
         r.close()
         w.close()
         self.assertIn(
@@ -169,7 +169,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         version.payload.magic = 123
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             loop.call_soon(w.send, version.to_array())
-            await node.NeoNode.connect_to(socket=r, _test_data=self.peername_data)
+            await node.EpicChainNode.connect_to(socket=r, _test_data=self.peername_data)
         r.close()
         w.close()
         self.assertIn(
@@ -187,7 +187,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             loop.call_soon(w.send, self.m_version.to_array())
             loop.call_soon(w.send, self.m_version.to_array())
-            await node.NeoNode.connect_to(socket=r, _test_data=self.peername_data)
+            await node.EpicChainNode.connect_to(socket=r, _test_data=self.peername_data)
         r.close()
         w.close()
         self.assertIn(
@@ -204,11 +204,11 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
             ),
         ]
         return version.VersionPayload(
-            nonce=123, user_agent="NEO3-MOCK-CLIENT", capabilities=caps
+            nonce=123, user_agent="epicchain-MOCK-CLIENT", capabilities=caps
         )
 
     def test_version_validation_client_is_self(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
 
         # test for client is self
         version = self._new_version()
@@ -219,7 +219,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertIn("Client is self", log_context.output[0])
 
     def test_version_validation_wrong_network(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
 
         # test for wrong network
         settings.network.magic = 769
@@ -231,12 +231,12 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertIn("Wrong network id", log_context.output[0])
 
     def test_version_validation_should_updating_address_to_connected_state(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
 
         # test updating address state to CONNECTED
         # this is relevant for addresses that have been added through the nodemanager based on the seedlist
         # set the addresses ourselves to mimick the nodemanager startup behaviour
-        node.NeoNode.addresses = [n.address]
+        node.EpicChainNode.addresses = [n.address]
         version = self._new_version()
 
         result = n._validate_version(version)
@@ -248,21 +248,21 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
     def test_version_validation_should_add_new_address(self):
         # when using the `connect_to` method or when a server is hosted accepting incoming clients
         # we should add the address to our know addresses list
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         # normally this is updated by `connection_made()`, since we skip that in this test we set it manually
         n.address.address = "127.0.0.1:1111"
-        self.assertEqual(0, len(node.NeoNode.addresses))
+        self.assertEqual(0, len(node.EpicChainNode.addresses))
 
         version = self._new_version()
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             n._validate_version(version)
-        self.assertEqual(1, len(node.NeoNode.addresses))
+        self.assertEqual(1, len(node.EpicChainNode.addresses))
         self.assertIn(
             "Adding address from outside 127.0.0.1:1111", log_context.output[0]
         )
 
     def test_version_validation_fail_if_no_full_node_capabilities(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
 
         version = self._new_version()
         # remove the full node capability
@@ -277,13 +277,13 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             loop.call_soon(w.send, self.m_version.to_array())
             loop.call_soon(w.send, self.m_verack.to_array())
-            await node.NeoNode.connect_to(socket=r, _test_data=self.peername_data)
+            await node.EpicChainNode.connect_to(socket=r, _test_data=self.peername_data)
         r.close()
         w.close()
         self.assertIn("Blocked by ipfilter: 127.0.0.1:1111", log_context.output[1])
 
     async def test_req_addr_list(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         await n.request_address_list()
 
@@ -293,7 +293,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertIsInstance(m.payload, empty.EmptyPayload)
 
     async def test_send_addr_list(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         n.addresses = [address.NetworkAddress(address="127.0.0.1:1111")]
         await n.send_address_list(n.addresses)
@@ -305,7 +305,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(n.addresses, m.payload.addresses)
 
     async def test_req_headers(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         index_start = 0
         count = 10
@@ -319,7 +319,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(count, m.payload.count)
 
     async def test_send_headers(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         headers = 2001 * [test_helpers.SerializableObject()]
 
@@ -332,7 +332,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(2000, len(m.payload.headers))
 
     async def test_req_blocks(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         hash_start = types.UInt256.from_string(
             "65793a030c0dcd4fff4da8a6a6d5daa8b570750da4fdeea1bbc43bdf124aedc9"
@@ -348,7 +348,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(count, m.payload.count)
 
     async def test_req_block_data(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         index_start = 1
         count = 2
@@ -362,7 +362,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(count, m.payload.count)
 
     async def test_request_data(self):
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
         hash1 = types.UInt256.from_string(
             "65793a030c0dcd4fff4da8a6a6d5daa8b570750da4fdeea1bbc43bdf124aedc9"
@@ -387,7 +387,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         )
         tx = transaction.Transaction.deserialize_from_bytes(raw_tx)
 
-        n = node.NeoNode(object(), object())
+        n = node.EpicChainNode(object(), object())
         n.send_message = mock.AsyncMock()
 
         await n.relay(tx)
@@ -466,7 +466,7 @@ class NeoNodeTestCase(IsolatedAsyncioTestCase):
         with self.assertLogs(network_logger, "DEBUG") as log_context:
             try:
                 loop.call_soon(w.send, data)
-                n, _ = await node.NeoNode.connect_to(
+                n, _ = await node.EpicChainNode.connect_to(
                     socket=r, _test_data=self.peername_data
                 )
                 n.start_message_handler()

@@ -1,230 +1,239 @@
-# Smart contracts
+# 🚀 Smart Contracts on EpicChain
 
-This document explains how to work with smart contracts. First we'll establish the mental model of working with 
-blockchains. If you are already familiar with the EpicChain blockchain or talking to smart contracts on blockchains in general 
-you can go directly to the [interaction section](#interacting-with-smart-contracts). Next we'll look have a what comes 
-in to play in a basic smart contract interaction. Followed by that we build an understanding of how the wrappers work 
-before diving into the breakdown of a NEP-17 token transfer where all learned comes together.
+Welcome to the powerful world of **smart contracts** on the **EpicChain** blockchain! This guide will walk you through everything from foundational concepts to actual token transfers—complete with code, examples, and expert tips.
 
-After reading this chapter you'll have an understanding of the major components involved in interacting with smart 
-contracts. You be able to do all common interactions with a smart contract of choice and have the foundational knowledge 
-that allows you to follow the [examples](https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain/tree/main/examples) on the Github repo.
+Whether you're a seasoned blockchain developer or a curious newcomer, this document will guide you step-by-step on how to interact with smart contracts using the [EpicChain Python SDK](https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain).
 
-## What are smart contracts?
+---
 
-Smart contracts are nothing more than programs of which the compiled code is stored on the blockchain. They 
-expose a public API which you can call to execute its functions, whether that be transfering
-tokens, executing some algorithm or just reading stored data is up to the contract author. It is important to realise
-that the smart contract code does not live on your machine and is executed on a remote network (the blockchain). 
+## 📘 Overview
 
-Add to this that smart contracts are "compiled" to a custom language and executed by a custom processor 
-(the EpicChain Virtual Machine). That means that your Python code cannot talk Python to the smart contract, but that a 
-translation has to happen. This library performs that translation under the hood and helps communicate between your 
-machine and the smart contract.
+First, we’ll establish the **mental model** of interacting with blockchains and smart contracts. If you're already familiar with EpicChain or how blockchains typically work, feel free to jump to the [Interacting with Smart Contracts](#interacting-with-smart-contracts) section.
 
-## Interacting with smart contracts
-There are 2 layers in this library used to talk to smart contracts. First, wrappers for various 
-[smart contract types](#types-of-smart-contracts) to make calling functions on them feel almost the same as calling
-regular Python code. Second, a `ChainFacade` class which acts as the network gateway. It will build and sign a 
-transaction if state needs to be persisted or use other means for read-only (free) executions.
+From there, we’ll:
 
-Lets breakdown the following example which queries the blockchain for the symbol of the EpicChain token contract and 
-will return `EpicChain` as result.
-<a name="symbol-reading-example"></a>
-```py3
+* Explore what smart contracts actually are.
+* Learn how to communicate with them using EpicChain Python SDK wrappers.
+* See real-world examples including a complete **XEP-17 token transfer**.
+
+By the end of this guide, you’ll be confident in performing both read and write operations with smart contracts, and ready to explore more [examples](https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain/tree/main/examples) from our GitHub repository.
+
+---
+
+## 💡 What Are Smart Contracts?
+
+Smart contracts are **programs deployed on the blockchain**. They execute code and hold state, allowing you to automate logic like token transfers, governance, or data storage.
+
+Some key points:
+
+* They're **not hosted locally**, but run on the **EpicChain Virtual Machine (XVM)**.
+* They offer a **public API**—you interact with them by invoking exposed functions.
+* Smart contract code is **compiled** into a format the blockchain understands. Python can't talk to them directly, so a **translation layer** is required.
+
+That’s where the **EpicChain Python SDK** comes in—it bridges Python and the EpicChain VM seamlessly.
+
+---
+
+## 🤝 Interacting with Smart Contracts
+
+The EpicChain SDK provides **two layers** for interacting with smart contracts:
+
+1. **Contract Wrappers**: Prebuilt interfaces that make calling contract methods feel like calling regular Python functions.
+2. **ChainFacade**: A powerful network handler that sends transactions and invokes smart contract methods.
+
+Here’s a basic example that queries the token symbol of the EpicChain token:
+
+```python
 facade = ChainFacade.node_provider_mainnet()
 epicchain = epicchainToken()
-await facade.test_invoke(neo.symbol())
+await facade.test_invoke(epicchain.symbol())
 ```
-Line `1` creates a facade for communicating with the MainNet. While it can be configured to perform automatic 
-transaction signing when persisting state, for now it is only important to know that this configured the facade to talk 
-to a MainNet RPC node internally.
 
-Line `2` is where the interesting parts happen. The call to `neo.symbol()` does not actually return "EpicChain", instead it 
-builds a sequence of EpicChain Virtual Machine instructions that the network understands. These instructions need to be sent
-to the network, which is where the `facade` comes in to play. The `facade` has two ways of sending the instructions
+### 🔍 Explanation
 
-1. `test_invoke()` - Use for read-only calls. Does not cost GAS.
-2. `invoke()` - Use for state changing calls. Costs GAS.
+* `facade`: Configures a connection to the EpicChain MainNet.
+* `epicchain.symbol()`: Constructs EpicChain VM instructions.
+* `test_invoke()`: Executes the call as a read-only query, costing **zero XPP**.
 
-!!! tip
+> 🧠 **Remember:**
+>
+> * `test_invoke()` is for **read-only** operations.
+> * `invoke()` is used to **change state**, and consumes **XPP** (the EpicChain native token).
 
-    There are multiple variations of the `*invoke*()` call such as `invoke_fast` and `invoke_multi`. See the API docs 
-    for more information.
+> 💡 **Pro Tip:**
+> Use `invoke_fast()` or `invoke_multi()` for advanced scenarios. Check the [API docs](https://github.com/epicchainlabs) for details.
 
+---
 
-In the example above `test_invoke()` is used because the `symbol()` function does not modify state. It just reads data 
-stored and so there is no reason to pay for it and grow the chain unnecessary. In later sections and chapters state 
-modifying transactions will be discussed. We'll also learn how to sign and pay the transactions with an account of our 
-choice. For now let's first get a greater understanding of the various wrappers that exist.
+## 🧰 Contract Wrappers
 
+Wrappers live in `epicchain.api.wrappers` and simplify interaction with common smart contract types on the EpicChain network.
 
-## Contract wrappers
-The smart contract wrappers are a key component in simplifying smart contract interaction. Like the facade they live in 
-the `neo3.api.wrappers` module. The EpicChain blockchain has a few native contracts build into the chain such as the EpicChain and 
-EpicPulse tokens, but also contracts providing information regarding the chain configuration like thekind of contracts specialised wrappers exist like `EpicChain`, `EpicPulse`, `PolicyContract` and `RoleContract`.
+EpicChain includes several **native contracts**, such as:
 
-### Types of smart contracts
-Technically speaking there are no types of smart contracts. However, they can implement standards that give 
-them compartalisable behaviour. For example implementing [XEP-11](https://github.com/neo-project/proposals/blob/master/nep-11.mediawiki) 
-gives NFT like behaviour, [XEP-17](https://github.com/neo-project/proposals/blob/master/nep-17.mediawiki) gives 
-fungible token behaviour. EpicChain and GAS are examples of NEP-17 tokens, but there are many more NEP-17 tokens in the system.
-To easily use these contracts there are more generic wrappers available such as `XEP17Contract`, `NEP11DivisibleContract` and 
-`NEP11NonDivisibleContract`.
+* `EpicChain` (XPR)
+* `EpicPulse` (XPP)
+* `PolicyContract`
+* `RoleContract`
 
-All they require is the contract hash and you're ready to call them like EpicChain or EpicPulse. For example wrapping the 
-[TOTHEMOON](https://dora.coz.io/contract/neo3/mainnet/0x56199aa066633745de4d603e6477881455c08243) token is done as follows 
+For standardized tokens like XEP-17, you can use generic wrappers:
 
-```py3 linenums="0"
-from neo3.core import types
-from neo3.api.wrappers import NEP17Contract
+```python
+from epicchain.core import types
+from epicchain.api.wrappers import XEP17Contract
 
 contract_hash = types.UInt160.from_string("0x56199aa066633745de4d603e6477881455c08243")
-ttm = NEP17Contract(contract_hash)
+ttm = XEP17Contract(contract_hash)
 ```
-You can now `transfer()` TTM tokens, query the `balance_of()` an account or call any of the other NEP-17 methods. If the
-contract exposes additional functions beyond those from the standard then there is the generic 
-`call_function(<name>,<args>)` that can always be used.
 
-Lastly, if none of the existing wrappers suit the contract use `GenericContract` or better create your own wrapper on 
-top of `GenericContract`. 
+You can now do:
 
-### Hierarchy
+```python
+await ttm.transfer(...)
+await ttm.balance_of(...)
+```
 
-In the previous section we described the various wrapper classes that can be used from most specialised to most generic. 
-The diagram below shows the structure
+> 🛠 **Advanced Tip:**
+> For custom smart contracts, use `GenericContract` or build your own wrapper on top of it.
 
-![image](wrapper-hierarchy.png)
+---
 
-* Yellow are the most specialised wrappers.
-* White are building blocks and not intended to be used on their own. They are shown to make the picture complete.
+## 🧭 Wrapper Class Hierarchy
 
-## Modifying chain state
-This section shows what it takes to modify chain state, specifically we'll show how to transfer a NEP-17 token (EpicChain) and 
-break down the steps and options.
+Visualizing the smart contract class structure:
 
-We've [previously](#symbol-reading-example) seen how to query the `symbol` of a contract by using the `test_invoke()` 
-method on the facade. Such queries do not modify state and thus does not require validation by the consensus nodes. 
-Transfering a token, which changes the balance of 2 accounts, on the other hand does require verification to prevent 
-unauthorized transfers. This verification and `transfer` script execution costs compute and thus has a GAS price 
-associated to it.
+![Wrapper Class Hierarchy](wrapper-hierarchy.png)
 
-State modifications always need to be communicated to the network using a [Transaction](https://github.com/CityOfZion/neo-mamba/blob/master/neo3/network/payloads/transaction.py#L199).
-This container will hold the `script` that executes the `transfer` action, signatures for 
-approval of the modification and has GAS attached to pay for the verification and execution fees. 
+* 🟨 **Yellow**: Specialized wrappers like `EpicChain`, `EpicPulse`.
+* ⚪ **White**: Internal building blocks—rarely used directly.
 
-### NEP-17 transfer example
-Let's see how this looks in code and then break it down line-by-line.
-```py3
+---
+
+## 🔄 Modifying Chain State
+
+Now let’s go deeper. Interacting with smart contracts to **change blockchain state** (like transferring tokens) involves building a transaction and signing it.
+
+Below is a **real-world example** of transferring 10 `EpicChain (XPR)` tokens:
+
+```python
 import asyncio
-from neo3.api.wrappers import ChainFacade, NeoToken
-from neo3.api.helpers.signing import sign_insecure_with_account
-from neo3.network.payloads.verification import Signer
-from neo3.wallet.wallet import Wallet
-
+from epicchain.api.wrappers import ChainFacade, EpicChain
+from epicchain.api.helpers.signing import sign_insecure_with_account
+from epicchain.network.payloads.verification import Signer
+from epicchain.wallet.wallet import Wallet
 
 async def main():
-    neo = NeoToken()
-    
+    epicchain = EpicChain()
+
     wallet = Wallet.from_file("./mywallet.json")
     account = wallet.account_default
-    
+
     facade = ChainFacade.node_provider_mainnet()
     facade.add_signer(
         sign_insecure_with_account(account, password="123"),
         Signer(account.script_hash)
     )
-    
+
     destination = "XsokdeQ3kXqsryRycSVd1cJ86tHJ8kn8uP"
-    print(await facade.invoke(neo.transfer(account.address, destination, 10)))
+    print(await facade.invoke(epicchain.transfer(account.address, destination, 10)))
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
-#### Wallet account setup
-Skipping the imports, startup boilerplate code and EpicChain wrapper creation (that we've seen before) we start here
-```py3 linenums="11"
-wallet = Wallet.from_file("./path_to/mywallet.json")
+
+### 🔐 Wallet Setup
+
+You must:
+
+* Own a funded account with both XPR and XPP.
+* Load it via `Wallet.from_file(...)`.
+
+```python
+wallet = Wallet.from_file("./mywallet.json")
 account = wallet.account_default
 ```
-In order to transfer tokens we need to have an account with funds to transfer them from. Secondly, all transactions are
-paid for with `GAS`. So while this example transfers `EpicChain`, the account must also hold a bit of `EpicPulse` to pay for the 
-fees. For the aforementioned reasons we assume you already have a [XEP-6](https://github.com/neo-project/proposals/blob/master/nep-6.mediawiki)
-wallet that we'll load from disk.
 
-!!! tip
-    If you want to learn upfront how much gas a transaction will cost then use the `estimate_gas()` helper on the facade.
+> 💡 **Tip:** Use `facade.estimate_epicpulse()` to preview the xpp fee (in XPP) before sending the transaction.
 
-#### Facade setup
-Next up is setting up and configuring the facade to automatically sign our transaction(s).
-```py3 linenums="14"
+### 🧱 Configuring the Facade
+
+```python
 facade = ChainFacade.node_provider_mainnet()
 facade.add_signer(
     sign_insecure_with_account(account, password="123"),
     Signer(account.script_hash)
 )
 ```
-The first line we've seen before and creates a facade configured to communicate with a MainNet RPC node. It is possible 
-to provide your own RPC node if you'd like by manually creating the `ChainFacade`. The facade can be configured to 
-automatically use a specific wallet account for signing transactions when `invoke()` is called on the facade. This is 
-done through the `add_signer()` function which takes two arguments
 
-1. a callback function to perform the actual transaction signing
-2. a [Signer](https://github.com/CityOfZion/neo-mamba/blob/5bc73174f91f6c2466743fbeb53f55dfb35786da/neo3/network/payloads/verification.py#L68) 
-object indicating where the signature is valid
+* Adds signing capability so the facade can approve and send state-changing transactions.
+* The default signer scope is `CALLED_BY_ENTRY` for added security.
 
-The callback function takes the provided account information, creates a signature and embeds it in the `Transaction`.  
-It states that `account` agrees with the modification that the transaction `script` will perform. The consensus nodes
-will verify the validity of the signature before performing the transfer. 
+> ℹ️ **Note:**
+>
+> * `test_invoke()` adds a signer automatically with restricted scope.
+> * You can add **multiple signers**, but only the first pays the fee.
 
-The `Signer` will have a scope of `CALLED_BY_ENTRY` by default. This means that the signature is only valid inside the
-first contract called. In this case that will be the `EpicChain` contract. This scope can be checked by the 
-`CheckWitness` function inside smart contracts to avoid abuse. There are many scenarios where one contract may need to
-call one or more other contracts. For such cases the signer can be configured with other scope options and rules. This
-however is beyond the scope of this example and can be learned more about [in this excellent article](https://neospcc.medium.com/thou-shalt-check-their-witnesses-485d2bf8375d) 
-by the NSPCC.
+---
 
-!!! note
-    1. Calling `test_invoke()` instead of `invoke()` will automatically add the `Signer`, without calling the callback, 
-    to limit the scope. This is useful if you want to realistically simulate your state changing calls.
-    2. You can add multiple signers. The first signer added is considerd the `sender` and will pay for the fees.
+### 📨 Sending the Transfer
 
-#### Invoke & receipt
-Now that we're done with the preparation we can perform the actual transfer.
-```py3 linenums="21"
-print(await facade.invoke(neo.transfer(account.address, destination, 10)))
+```python
+print(await facade.invoke(epicchain.transfer(account.address, destination, 10)))
 ```
-The `neo.transfer()` call will generate VM instructions to perform the requested token transfer. The instructions are
-passed to `facade.invoke()` which builds the transaction, signs it and sends it to the network. It will wait and poll 
-the network for a receipt and print that. Among the `result` of calling the `transfer` function the receipt contains 
-notifications emitted by the smart contract(s) and more. 
 
-An example receipt for the transfer may look as follows
+This will:
 
-```py3 linenums="0"
+1. Construct the VM instructions to transfer tokens.
+2. Sign and broadcast the transaction.
+3. Wait for confirmation and return a receipt.
+
+Example receipt:
+
+```python
 InvokeReceipt(
-    tx_hash=619759221b434356e76783534b7ca9dc8c8ec36f25c1943c2262f727736c862a, 
-    included_in_block=18419, 
-    confirmations=3, 
-    gas_consumed=9977750, 
-    state=HALT, 
-    exception=None, 
+    tx_hash="6197...862a",
+    included_in_block=18419,
+    confirmations=3,
+    epicpulse_consumed=9977750,
+    state=HALT,
+    exception=None,
     notifications=[
         Notification(
-            contract=d2a4cff31913016155e38e474a2c06d08be276cf, 
-            event_name=Transfer, 
-            state=StackItem(type=ARRAY, value=[
-                StackItem(type=BYTE_STRING, value=b'3\xfc\xa3\x0b\xc0,\x81%\xc2\xb7\xb0\x85\xb7\x96\x13Pk\xbf=O'), 
-                StackItem(type=BYTE_STRING, value=b'^\x1c{1\xf3\xd1\x9b\xc3\xb9\xaeaY\xee\x80v\xc7\xcb1\x11z'), 
-                StackItem(type=INTEGER, value=10)
-                ]
-            )
+            contract="d2a4cff319130161...",
+            event_name="Transfer",
+            state=[<from>, <to>, <amount>]
         )
-    ], 
+    ],
     result=True
 )
 ```
 
-!!! tip 
-    If you would like to return immediatly and not wait for a receipt use `invoke_fast()` instead of `invoke()`. 
-    This will return a transaction id.
+> 🔁 **Need Speed?**
+> Use `invoke_fast()` if you want a transaction ID instantly without waiting for the receipt.
+
+---
+
+## ✅ What’s Next?
+
+After mastering this:
+
+* Try deploying your own contract.
+* Explore interaction with **multi-signature wallets**, **NFTs**, or **governance contracts**.
+* Follow [more examples](https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain/tree/main/examples) and build the future with EpicChain.
+
+---
+
+## 📎 TL;DR
+
+| Task             | Method                 | Notes            |
+| ---------------- | ---------------------- | ---------------- |
+| Read data        | `test_invoke()`        | Free             |
+| Write data       | `invoke()`             | Costs XPP        |
+| Estimate fees    | `estimate_epicpulse()` | Optional helper  |
+| Wait for receipt | `invoke()`             | Default behavior |
+| Get tx hash only | `invoke_fast()`        | No receipt wait  |
+
+---
+
+Ready to build the next generation of decentralized applications?
+Start coding with EpicChain today. 💥

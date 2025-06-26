@@ -3,14 +3,14 @@ import logging
 import socket
 import asyncio
 from unittest import mock, IsolatedAsyncioTestCase, TestCase, skip
-from neo3.network import node, message, capabilities
-from neo3.network.convenience import nodemanager, requestinfo
-from neo3.network.payloads import address, version, ping
-from neo3 import network_logger
-from neo3.settings import settings
+from epicchain.network import node, message, capabilities
+from epicchain.network.convenience import nodemanager, requestinfo
+from epicchain.network.payloads import address, version, ping
+from epicchain import network_logger
+from epicchain.settings import settings
 from datetime import datetime
 from copy import deepcopy
-from neo3.core import msgrouter
+from epicchain.core import msgrouter
 
 
 class NodeManagerTestCase(TestCase):
@@ -20,11 +20,11 @@ class NodeManagerTestCase(TestCase):
 
     def setUp(self) -> None:
         self.nodemgr._reset_for_test()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
         settings.reset_settings_to_default()
 
-        self.node1 = node.NeoNode(object(), object())
-        self.node2 = node.NeoNode(object(), object())
+        self.node1 = node.EpicChainNode(object(), object())
+        self.node2 = node.EpicChainNode(object(), object())
 
         self.addr1 = address.NetworkAddress(address="127.0.0.1:10333")
         self.addr2 = address.NetworkAddress(address="127.0.0.2:20333")
@@ -155,7 +155,7 @@ caps = [capabilities.FullNodeCapability(0)]
 m_version = message.Message(
     msg_type=message.MessageType.VERSION,
     payload=version.VersionPayload(
-        nonce=123, user_agent="NEO3-MOCK-CLIENT", capabilities=caps
+        nonce=123, user_agent="epicchain-MOCK-CLIENT", capabilities=caps
     ),
 )
 m_verack = message.Message(msg_type=message.MessageType.VERACK)
@@ -179,7 +179,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         # async_logger.addHandler(stdio_handler)
         async_logger.setLevel(logging.DEBUG)
 
-        network_logger = logging.getLogger("neo3.network")
+        network_logger = logging.getLogger("epicchain.network")
         # network_logger.addHandler(stdio_handler)
         network_logger.setLevel(logging.DEBUG)
 
@@ -187,7 +187,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
 
     def setUp(self) -> None:
         self.nodemgr._reset_for_test()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
         settings.reset_settings_to_default()
 
     async def test_start_shutdown(self):
@@ -225,7 +225,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         self.assertTrue(self.nodemgr.is_running)
         # 4 looping service tasks
         self.assertEqual(4, len(self.nodemgr.tasks))
-        self.assertIsInstance(call_back_result, node.NeoNode)
+        self.assertIsInstance(call_back_result, node.EpicChainNode)
         await self.nodemgr.shutdown()
         for t in self.nodemgr.tasks:
             self.assertTrue(t.done())
@@ -236,7 +236,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         # create 1 open spot
         self.nodemgr.max_clients = 1
         # ensure we have an address that can be connected to
-        node.NeoNode.addresses = [address.NetworkAddress(address="127.0.0.1:1111")]
+        node.EpicChainNode.addresses = [address.NetworkAddress(address="127.0.0.1:1111")]
 
         with self.assertLogs(network_logger, "DEBUG") as context:
             await self.nodemgr._fill_open_connection_spots()
@@ -246,13 +246,13 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
     async def test_fill_open_connection_spots_dont_queue_addr_that_is_already_queued(
         self,
     ):
-        self.node1 = node.NeoNode(object(), object())
+        self.node1 = node.EpicChainNode(object(), object())
 
         # ensure we have an address that can be connected to
         addr = address.NetworkAddress(address="127.0.0.1:1111")
         # create 1 open spot
         self.nodemgr.max_clients = 2
-        node.NeoNode.addresses = [addr]
+        node.EpicChainNode.addresses = [addr]
         # and ensure we pretend we have already queued this address
         self.nodemgr.queued_addresses = [addr]
 
@@ -270,7 +270,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         self.nodemgr.max_clients = 2
         # just a placeholder to have a count matching min_clients
         self.nodemgr.nodes = [object()]
-        node.NeoNode.addresses = []
+        node.EpicChainNode.addresses = []
 
         with self.assertLogs(network_logger, "DEBUG") as context:
             await self.nodemgr._fill_open_connection_spots()
@@ -302,7 +302,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         # let's also set up an address in POOR state that should be reset to NEW
         addr = address.NetworkAddress(address="127.0.0.1:1111")
         addr.set_state_poor()
-        node.NeoNode.addresses = [addr]
+        node.EpicChainNode.addresses = [addr]
         with self.assertLogs(network_logger, "DEBUG") as context:
             await self.nodemgr._fill_open_connection_spots()
         self.assertIn(
@@ -310,14 +310,14 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
         )
         self.assertIn("Recycling old addresses", context.output[1])
         self.assertEqual(0, self.nodemgr.MAX_NODE_POOL_ERROR_COUNT)
-        self.assertTrue(node.NeoNode.addresses[0].is_state_new)
+        self.assertTrue(node.EpicChainNode.addresses[0].is_state_new)
 
     async def test_fill_open_connection_spots_node_timeout_error(self):
         self.nodemgr.min_clients = 1
         self.nodemgr.max_clients = 2
 
         addr = address.NetworkAddress(address="127.0.0.1:1111")
-        node.NeoNode.addresses = [addr]
+        node.EpicChainNode.addresses = [addr]
 
         call_back_result = None
 
@@ -332,7 +332,7 @@ class NodeManagerTestCase2(IsolatedAsyncioTestCase):
             # for some reason patching asyncio.open_connection just doesn't work in this test
             # working around it like this
             with mock.patch.object(
-                node.NeoNode, "connect_to", return_value=(None, (f"...", "Timed out"))
+                node.EpicChainNode, "connect_to", return_value=(None, (f"...", "Timed out"))
             ):
                 await self.nodemgr._fill_open_connection_spots()
 
@@ -351,12 +351,12 @@ class NodeManagerTimedTestCase(IsolatedAsyncioTestCase):  # asynctest.ClockedTes
 
     def setUp(self) -> None:
         self.nodemgr._reset_for_test()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
         settings.reset_settings_to_default()
 
         fake_reader, fake_writer = object(), object()
-        self.node1 = node.NeoNode(fake_reader, fake_writer)
-        self.node2 = node.NeoNode(fake_reader, fake_writer)
+        self.node1 = node.EpicChainNode(fake_reader, fake_writer)
+        self.node2 = node.EpicChainNode(fake_reader, fake_writer)
 
         self.addr1 = address.NetworkAddress(address="127.0.0.1:10333")
         self.addr2 = address.NetworkAddress(address="127.0.0.2:20333")
@@ -450,7 +450,7 @@ class NodeManagerTimedTestCase(IsolatedAsyncioTestCase):  # asynctest.ClockedTes
             side_effect=mock.AsyncMock(return_value=result),
         ) as query_result:
             await self.nodemgr._process_seed_list_addresses()
-        self.assertEqual(1, len(node.NeoNode.addresses))
+        self.assertEqual(1, len(node.EpicChainNode.addresses))
 
         with self.assertLogs(network_logger, "DEBUG") as context:
             with mock.patch(

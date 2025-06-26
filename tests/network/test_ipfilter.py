@@ -1,5 +1,5 @@
 import unittest
-from neo3.network.ipfilter import IPFilter
+from epicchain.network.ipfilter import IPFilter
 
 
 class IPFilteringTestCase(unittest.TestCase):

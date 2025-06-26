@@ -64,13 +64,13 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(BROWSER) docs/site/index.html
 
 docs-deploy: ## manually deploy the docs to github pages
-	aws s3 sync ./docs/site  s3://docs-coz/neo3/mamba --acl public-read
+	aws s3 sync ./docs/site  s3://docs-coz/epicchain/mamba --acl public-read
 
 type: ## perform static type checking using mypy
-	mypy neo3/
+	mypy epicchain/
 
 black: ## apply black formatting
-	black neo3/ examples/ tests/
+	black epicchain/ examples/ tests/
 
 build: ## create source distribution and wheel
 	python -m build

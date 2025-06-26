@@ -1,5 +1,5 @@
 import unittest
-from neo3.contracts.callflags import CallFlags
+from epicchain.contracts.callflags import CallFlags
 
 
 class CallFlagsTestCase(unittest.TestCase):

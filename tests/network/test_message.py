@@ -2,8 +2,8 @@ import unittest
 import binascii
 import lz4
 from unittest.mock import patch, call
-from neo3.network import message
-from neo3.network.payloads import (
+from epicchain.network import message
+from epicchain.network.payloads import (
     inventory,
     empty,
     block,
@@ -12,8 +12,8 @@ from neo3.network.payloads import (
     address,
     version,
 )
-from neo3.core.types.uint import UInt256
-from neo3.core import serialization
+from epicchain.core.types.uint import UInt256
+from epicchain.core import serialization
 
 
 class NetworkMessageTestCase(unittest.TestCase):
@@ -124,7 +124,7 @@ class NetworkMessageTestCase(unittest.TestCase):
             )
 
     def test_payload_from_data(self):
-        with patch("neo3.core.serialization.BinaryReader") as br:
+        with patch("epicchain.core.serialization.BinaryReader") as br:
             reader = br.return_value.__enter__.return_value
             message.Message._payload_from_data(message.MessageType.INV, b"")
             message.Message._payload_from_data(message.MessageType.GETBLOCKBYINDEX, b"")

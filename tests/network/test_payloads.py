@@ -3,8 +3,8 @@ import binascii
 import enum
 from copy import deepcopy
 from bitarray import bitarray
-from neo3.network import capabilities
-from neo3.network.payloads import (
+from epicchain.network import capabilities
+from epicchain.network.payloads import (
     address,
     empty,
     transaction,
@@ -15,8 +15,8 @@ from neo3.network.payloads import (
     filter as filterpayload,
     version,
 )
-from neo3.core import types, serialization, cryptography as crypto
-from neo3.settings import settings
+from epicchain.core import types, serialization, cryptography as crypto
+from epicchain.settings import settings
 
 
 class AddrTestCase(unittest.TestCase):
@@ -677,7 +677,6 @@ class HeaderTestCase(unittest.TestCase):
 
     def test_deserialization_failure1(self):
         # there should be a 1 byte witness object count (fixed to value 1) before the actual witness object.
-        # see https://github.com/neo-project/neo/issues/1128
         raw_data = binascii.unhexlify(
             b"0000000001FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A402FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00A4000000000000000000000000000000007B00000000F7B4D00143932F3B6243CFC06CB4A68F22C739E200020102020304"
         )

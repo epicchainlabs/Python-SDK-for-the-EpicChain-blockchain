@@ -1,7 +1,7 @@
 import unittest
 import binascii
-from neo3.network import capabilities
-from neo3.core import serialization
+from epicchain.network import capabilities
+from epicchain.core import serialization
 
 
 class FullNodeCapabilitiesTestCase(unittest.TestCase):

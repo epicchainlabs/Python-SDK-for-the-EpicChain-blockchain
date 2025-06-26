@@ -7,24 +7,24 @@ import shlex
 import time
 import json
 from typing import Optional
-from neo3.wallet.wallet import Wallet
-from neo3.core import types
+from epicchain.wallet.wallet import Wallet
+from epicchain.core import types
 
 shared_dir = pathlib.Path("shared").resolve(strict=True)
 
 user_wallet = Wallet.from_file(f"{shared_dir}/user-wallet.json", passwords=["123"])
-coz_wallet = Wallet.from_file(f"{shared_dir}/coz-wallet.json", passwords=["123"])
-neoxpress_config_path = f"{shared_dir}/default.neo-express"
-neoxpress_batch_path = f"{shared_dir}/setup-neoxp-for-tests.batch"
+coz_wallet = Wallet.from_file(f"{shared_dir}/epicchain-wallet.json", passwords=["123"])
+epicchainxpress_config_path = f"{shared_dir}/default.epicchain-express"
+epicchainxpress_batch_path = f"{shared_dir}/setup-epicchainxp-for-tests.batch"
 coz_token_hash = types.UInt160.from_string("0x41ee5befd936c90f15893261abbd681f20ed0429")
-# corresponds to the nep-11 token in the `/nep11-token/` dir and deployed with the `coz` account
-nep11_token_hash = types.UInt160.from_string(
+# corresponds to the XEP-11 token in the `/xep11-token/` dir and deployed with the `coz` account
+xep11_token_hash = types.UInt160.from_string(
     "0x35de2913c480c19a7667da1cc3b2fe3e4c9de761"
 )
 
 
-class NeoExpress:
-    """Neo express wrapper"""
+class EpicChainExpress:
+    """EpicChain express wrapper"""
 
     def __init__(
         self,
@@ -38,14 +38,14 @@ class NeoExpress:
         # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool )
         # Unless specified manually
         if sys.platform == "win32":
-            self.prog = f"{pathlib.Path().home()}\\.dotnet\\tools\\neoxp"
+            self.prog = f"{pathlib.Path().home()}\\.dotnet\\tools\\epicchainxp"
         else:
-            self.prog = f"{pathlib.Path().home()}/.dotnet/tools/neoxp"
+            self.prog = f"{pathlib.Path().home()}/.dotnet/tools/epicchainxp"
 
         self.config_path = (
-            config_path if config_path is not None else neoxpress_config_path
+            config_path if config_path is not None else epicchainxpress_config_path
         )
-        self.batch_path = batch_path if batch_path is not None else neoxpress_batch_path
+        self.batch_path = batch_path if batch_path is not None else epicchainxpress_batch_path
         self.debug = debug
 
         self._process = None
@@ -70,7 +70,7 @@ class NeoExpress:
                 )
             except subprocess.SubprocessError:
                 raise ValueError(
-                    "Cannot automatically neo express executable. Please specify the path"
+                    "Cannot automatically epicchain express executable. Please specify the path"
                 )
 
     def _verify_executable(self, full_path: str):

@@ -1,6 +1,6 @@
 [
   {
-    "contract": "NeoToken",
+    "contract": "EpicChain",
     "operation": "registerCandidate",
     "args": [
       {

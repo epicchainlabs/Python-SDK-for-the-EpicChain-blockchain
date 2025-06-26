@@ -5,20 +5,20 @@ Finally, the contract is destroyed.
 """
 
 import asyncio
-from neo3.api.wrappers import GenericContract, ChainFacade
-from neo3.api.helpers.signing import sign_insecure_with_account
-from neo3.api.helpers import unwrap
-from neo3.contracts import nef, manifest
-from neo3.network.payloads.verification import Signer
+from epicchain.api.wrappers import GenericContract, ChainFacade
+from epicchain.api.helpers.signing import sign_insecure_with_account
+from epicchain.api.helpers import unwrap
+from epicchain.contracts import xef, manifest
+from epicchain.network.payloads.verification import Signer
 from examples import shared
 
 
-async def main(neoxp: shared.NeoExpress):
+async def main(epicchainxp: shared.EpicChainExpress):
     wallet = shared.user_wallet
     account = wallet.account_default
 
     # This is your interface for talking to the blockchain
-    facade = ChainFacade(rpc_host=neoxp.rpc_host)
+    facade = ChainFacade(rpc_host=epicchainxp.rpc_host)
     facade.add_signer(
         sign_insecure_with_account(account, password="123"),
         Signer(account.script_hash),  # default scope is CALLED_BY_ENTRY
@@ -26,12 +26,12 @@ async def main(neoxp: shared.NeoExpress):
 
     files_path = f"{shared.shared_dir}/deploy-update-destroy/"
 
-    nef_v1 = nef.NEF.from_file(files_path + "contract_v1.nef")
+    xef_v1 = xef.XEF.from_file(files_path + "contract_v1.xef")
     manifest_v1 = manifest.ContractManifest.from_file(
         files_path + "contract_v1.manifest.json"
     )
     print("Deploying contract v1...", end="")
-    receipt = await facade.invoke(GenericContract.deploy(nef_v1, manifest_v1))
+    receipt = await facade.invoke(GenericContract.deploy(xef_v1, manifest_v1))
     contract_hash = receipt.result
     print(f"contract hash = {contract_hash}")
 
@@ -42,12 +42,12 @@ async def main(neoxp: shared.NeoExpress):
     print(unwrap.as_int(result))
 
     print("Updating contract with version 2...", end="")
-    nef_v2 = nef.NEF.from_file(files_path + "contract_v2.nef")
+    xef_v2 = xef.XEF.from_file(files_path + "contract_v2.xef")
     manifest_v2 = manifest.ContractManifest.from_file(
         files_path + "contract_v2.manifest.json"
     )
     # updating doesn't give any return value. So if it doens't fail then it means success
-    await facade.invoke(contract.update(nef=nef_v2, manifest=manifest_v2))
+    await facade.invoke(contract.update(xef=xef_v2, manifest=manifest_v2))
     print("done")
 
     print("Calling `add` with input 1, result is: ", end="")
@@ -62,5 +62,5 @@ async def main(neoxp: shared.NeoExpress):
 
 
 if __name__ == "__main__":
-    with shared.NeoExpress() as neoxp:
-        asyncio.run(main(neoxp))
+    with shared.EpicChainExpress() as epicchainxp:
+        asyncio.run(main(epicchainxp))

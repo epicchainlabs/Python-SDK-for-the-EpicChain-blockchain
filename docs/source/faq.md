@@ -1,30 +1,91 @@
-## Why are consensus committee only functions not wrapped?
-The group of users that can make use of this is _very_ limited. By ommitting these functions the API list stays short and
-relevant to the biggest group of users. Those who do wish to use these functions can always use the generic 
-`call_function()` method on the contract of choice to call them.
+# ❓ Frequently Asked Questions (Smart Contract SDK)
 
-## Why is the native ContractManagement contract not wrapped?
-The contract `deploy`, `update` and `destroy` functionality is already part of the `GenericContract` base class used in 
-all contract wrappers.
+This section addresses some of the most common questions regarding design decisions and usage patterns in the EpicChain Python SDK. Whether you're curious about missing wrappers or MyPy errors, this guide provides clear, developer-focused answers.
 
-## Why is the native Ledger contract not wrapped?
-All information that can be obtained from the `Ledger` contract can also be obtained using the `EpicRpcClient`. In some 
-cases the `Ledger` contract returns even incomplete data. For example `Ledger.GetBlock` returns a `TrimmedBlock` without
-transactions as opposed to `EpicRpcClient.get_block()` which returns the complete block. The `Ledger` contract is really
-intended to be consumed by smart contracts.
+---
 
-## Why does the IJson interface consume and produce dictionaries?
-This was originally used in the full node version of Mamba. However, it seems like the standard in the Python community
- if judged by looking at popular packages/frameworks like `requests` and `aiohttp`. Also, frameworks like `FastAPI`, 
- `Django` and `Flask` all have ways of consuming a `dict` when returning a json response. It seems like the best choice 
- for these reasons. 
+## 🏛 Why Aren’t Consensus Committee Functions Wrapped?
 
-## How do I prevent 'error: "as_none" of "StackItem" does not return a value' when type checking with MyPy?
-The `mypy` team made an unfortunate choice to include a restriction on something that is actually a code style choice.
-They [refuse](https://github.com/python/mypy/issues/6549) to change the default behaviour despite the raised complaints 
-and other type checkers like pyright not falling over this. The error can be disabled with 
-`--disable-error-code func-returns-value` or by adding it to your configuration file i.e. for `pyproject.toml` use 
+> **Short answer:** Because very few people can use them.
+
+The **consensus committee** consists of privileged nodes or actors on the EpicChain network. Their smart contract functions are meant for internal governance and low-level protocol operations.
+
+By omitting these from standard wrappers, we:
+
+* Keep the SDK clean, focused, and user-friendly.
+* Avoid confusion among everyday developers who don’t need or have access to these features.
+
+> 🔧 **Need them anyway?**
+> You can still use them via the flexible `call_function()` method:
+
+```python
+contract.call_function("committee_vote", [args])
+```
+
+---
+
+## 🧱 Why Isn’t the Native `ContractManagement` Contract Wrapped?
+
+The core actions of this contract—`deploy`, `update`, and `destroy`—are already integrated into the base `GenericContract` class.
+
+This means:
+
+* Any contract wrapper you use (including custom ones) inherits these methods automatically.
+* You don’t need a separate wrapper just for contract deployment or modification.
+
+> 🧠 **Tip:** Use `contract.deploy()`, `contract.update()`, or `contract.destroy()` directly on your smart contract wrapper object.
+
+---
+
+## 📒 Why Is the Native `Ledger` Contract Not Wrapped?
+
+The native `Ledger` contract is **not user-friendly** or complete for external use. Its methods are primarily intended for smart contracts themselves—not for external SDK consumers.
+
+For example:
+
+* `Ledger.GetBlock` returns a **trimmed block** (without transactions).
+* `EpicRpcClient.get_block()` returns the **full block**, including all transactions.
+
+Because `EpicRpcClient` provides **more complete and consistent** access to blockchain data, there’s **no practical need** to wrap `Ledger` in the SDK.
+
+> 🔍 **Bottom line:** Use `EpicRpcClient` for data retrieval from the chain. Leave `Ledger` to the contracts.
+
+---
+
+## 🔄 Why Does the `IJson` Interface Use Python Dictionaries?
+
+While this may seem like an arbitrary choice, it’s rooted in **Python community standards**:
+
+* Popular libraries like `requests`, `aiohttp`, `FastAPI`, `Django`, and `Flask` all standardize on using `dict` objects to handle JSON payloads.
+* Dictionaries provide simplicity, flexibility, and seamless integration with most frameworks and serializers.
+
+This makes the SDK easier to integrate into web servers, backend systems, and JSON-based APIs.
+
+> 💬 **In short:** Using `dict` aligns with Python’s ecosystem and best practices.
+
+---
+
+## 🧪 How Do I Fix the MyPy Error: `"as_none" of "StackItem" does not return a value`?
+
+This is a known limitation of **MyPy**, and not an actual code bug.
+
+MyPy enforces that every function must **explicitly return a value**, even if it’s just `None`. However, many developers and other tools (like `pyright`) consider this unnecessary for simple functions like `as_none()`.
+
+### 🔧 Solution:
+
+Add the following configuration to disable the error:
+
+#### Option 1: CLI
+
+```bash
+mypy --disable-error-code func-returns-value
+```
+
+#### Option 2: `pyproject.toml`
+
 ```toml
 [tool.mypy]
 disable_error_code = "func-returns-value"
 ```
+
+> 🛠 This won’t impact runtime behavior and will keep your type checking smooth.

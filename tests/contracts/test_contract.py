@@ -1,8 +1,8 @@
 import unittest
 import binascii
-from neo3 import vm
-from neo3.contracts import utils, contract
-from neo3.core import cryptography, types
+from epicchain import vm
+from epicchain.contracts import utils, contract
+from epicchain.core import cryptography, types
 
 
 class ContractTestCase(unittest.TestCase):

@@ -1,12 +1,12 @@
 import unittest
 import base64
 from typing import Optional, Any
-import neo3crypto
+import epicchaincrypto
 from aioresponses import aioresponses
-from neo3 import api
-from neo3.network.payloads import transaction, block, verification
-from neo3.core import types, cryptography
-from neo3.wallet import utils
+from epicchain import api
+from epicchain.network.payloads import transaction, block, verification
+from epicchain.core import types, cryptography
+from epicchain.wallet import utils
 
 JSON = Any
 
@@ -79,7 +79,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         }
         self.mock_response(captured1)
         self.mock_response(captured2)
-        from neo3.contracts.contract import CONTRACT_HASHES
+        from epicchain.contracts.contract import CONTRACT_HASHES
 
         results = []
         async for k, v in self.client.find_states(CONTRACT_HASHES.MANAGEMENT, b"\x0c"):
@@ -100,7 +100,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
                     "trigger": "Application",
                     "vmstate": "HALT",
                     "exception": None,
-                    "gasconsumed": "9999540",
+                    "epicpulseconsumed": "9999540",
                     "stack": [],
                     "notifications": [
                         {
@@ -142,14 +142,14 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
                 {
                     "trigger": "OnPersist",
                     "vmstate": "HALT",
-                    "gasconsumed": "0",
+                    "epicpulseconsumed": "0",
                     "stack": [],
                     "notifications": [],
                 },
                 {
                     "trigger": "PostPersist",
                     "vmstate": "HALT",
-                    "gasconsumed": "0",
+                    "epicpulseconsumed": "0",
                     "stack": [],
                     "notifications": [
                         {
@@ -244,9 +244,9 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
             "id": 1,
             "updatecounter": 0,
             "hash": contract_hash_str,
-            "nef": {
+            "xef": {
                 "magic": 860243278,
-                "compiler": "Neo.Compiler.CSharp 3.0.0",
+                "compiler": "EpicChain.Compiler.CSharp 3.0.0",
                 "source": "",
                 "tokens": [
                     {
@@ -326,7 +326,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
                         {
                             "name": "update",
                             "parameters": [
-                                {"name": "nefFile", "type": "ByteArray"},
+                                {"name": "xefFile", "type": "ByteArray"},
                                 {"name": "manifest", "type": "String"},
                                 {"name": "data", "type": "Any"},
                             ],
@@ -415,7 +415,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(contract_hash, response_state.hash)
         self.assertEqual("CommitteeInfoContract", response_state.manifest.name)
 
-    async def test_get_nep17_balances(self):
+    async def test_get_xep17_balances(self):
         captured = {
             "balance": [
                 {
@@ -433,11 +433,11 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         }
         self.mock_response(captured)
 
-        response = await self.client.get_nep17_balances("bogus_addr")
+        response = await self.client.get_xep17_balances("bogus_addr")
         self.assertEqual(2, len(response.balances))
         self.assertEqual(99999900, response.balances[1].amount)
 
-    async def test_get_nep17_transfers(self):
+    async def test_get_xep17_transfers(self):
         captured = {
             "sent": [],
             "received": [
@@ -465,7 +465,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
 
         self.mock_response(captured)
 
-        response = await self.client.get_nep17_transfers("bogus_addr")
+        response = await self.client.get_xep17_transfers("bogus_addr")
         self.assertEqual(2, len(response.received))
         self.assertEqual(100, response.received[0].amount)
 
@@ -544,15 +544,15 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         response = await self.client.get_transaction_height(tx_hash)
         self.assertEqual(height, response)
 
-    async def test_get_unclaimed_gas_(self):
-        addr = "NgaiKFjurmNmiRzDRQGs44yzByXuSkdGPF"
+    async def test_get_unclaimed_xpp_(self):
+        addr = "XgaiKFjurmNmiRzDRQGs44yzByXuSkdGPF"
         value = 100
         self.mock_response({"unclaimed": str(value)})
-        response_value = await self.client.get_unclaimed_gas(addr)
+        response_value = await self.client.get_unclaimed_xpp(addr)
         self.assertEqual(value, response_value)
 
     async def test_get_version(self):
-        user_agent = "/Neo:3.0.3/"
+        user_agent = "/EpicChain:3.0.3/"
         captured = {
             "tcpport": 10333,
             "wsport": 10334,
@@ -567,7 +567,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
                 "maxvaliduntilblockincrement": 5760,
                 "maxtransactionsperblock": 512,
                 "memorypoolmaxtransactions": 50000,
-                "initialgasdistribution": 5200000000000000,
+                "initialepicpulsedistribution": 5200000000000000,
             },
         }
         self.mock_response(captured)
@@ -580,7 +580,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         captured = {
             "script": "VgEMFFbIjRQK0swPKQN90Qp/AGCitShcYEBXAANAQZv2Z84MBWhlbGxvDAV3b3JsZFNB5j8YhEBXAQAMFFbIjRQK0swPKQN90Qp/AGCitShcQfgn7IxwaEA=",
             "state": "HALT",
-            "gasconsumed": "1017810",
+            "epicpulseconsumed": "1017810",
             "exception": None,
             "stack": [{"type": "Boolean", "value": True}],
         }
@@ -596,7 +596,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         captured = {
             "script": "VgEMFFbIjRQK0swPKQN90Qp/AGCitShcYEBXAANAQZv2Z84MBWhlbGxvDAV3b3JsZFNB5j8YhEBXAQAMFFbIjRQK0swPKQN90Qp/AGCitShcQfgn7IxwaEA=",
             "state": "HALT",
-            "gasconsumed": "1017810",
+            "epicpulseconsumed": "1017810",
             "exception": None,
             "notifications": [],
             "stack": [
@@ -651,7 +651,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         captured = {
             "script": "VgEMFFbIjRQK0swPKQN90Qp/AGCitShcYEBXAANAQZv2Z84MBWhlbGxvDAV3b3JsZFNB5j8YhEBXAQAMFFbIjRQK0swPKQN90Qp/AGCitShcQfgn7IxwaEA=",
             "state": "HALT",
-            "gasconsumed": "1017810",
+            "epicpulseconsumed": "1017810",
             "exception": None,
             "stack": [{"type": "Boolean", "value": True}],
             "notifications": [],
@@ -706,8 +706,7 @@ class TestEpicRpcClient(unittest.IsolatedAsyncioTestCase):
         self.assertIn("bogus_message", str(context.exception))
         self.assertIn("bogus_data", str(context.exception))
 
-    async def test_findstorage_issue_neogo(self):
-        # test workaround for https://github.com/nspcc-dev/neo-go/issues/3370
+    async def test_findstorage_issue_epicchaingo(self):
         captured = {"results": None, "next": 0, "truncated": False}
         self.mock_response(captured)
 
@@ -750,11 +749,11 @@ class TestStackItem(unittest.TestCase):
         )
 
     def test_as_str(self):
-        si = api.StackItem(api.StackItemType.BYTE_STRING, b"NEO")
+        si = api.StackItem(api.StackItemType.BYTE_STRING, b"EpicChain")
         value = si.as_str()
 
         self.assertIsInstance(value, str)
-        self.assertEqual("NEO", value)
+        self.assertEqual("EpicChain", value)
 
         with self.assertRaises(ValueError) as context:
             self.si_int.as_str()
@@ -826,6 +825,6 @@ class TestStackItem(unittest.TestCase):
 
         # invalid public key
         si = api.StackItem(api.StackItemType.BYTE_STRING, b"\x01" * 64)
-        with self.assertRaises(neo3crypto.ECCException) as context:
+        with self.assertRaises(epicchaincrypto.ECCException) as context:
             value = si.as_public_key()
         self.assertEqual("Failed public key validation", str(context.exception))

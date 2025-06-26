@@ -1,5 +1,5 @@
 import unittest
-from neo3.contracts import abi
+from epicchain.contracts import abi
 
 
 class ContractParameterDefinitionTestCase(unittest.TestCase):

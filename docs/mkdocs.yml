@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
-site_name: mamba
-site_url: https://dojo.coz.io/neo3/mamba/
-repo_url: https://github.com/CityOfZion/neo-mamba
-copyright: 2019-2022, COZ - Erik van den Brink
+site_name: raptor
+site_url: https://epic-chain.org/docs/epicchain-raptor/overview
+repo_url: https://github.com/epicchainlabs/epicchain-raptor
+copyright: 2021-2025, EpicChain Labs
 docs_dir: 'source'
 use_directory_urls: false
 extra:
@@ -10,10 +10,10 @@ extra:
 plugins:
   - search
   - mkapi:
-     src_dirs: ["../neo3"]
+     src_dirs: ["../epicchain"]
 theme:
-  logo: mamba-logo.png
-  favicon: mamba-logo.png
+  logo: raptor-logo.png
+  favicon: raptor-logo.png
   name: material
   custom_dir: source
   features:
@@ -44,7 +44,7 @@ nav:
   - Smart contracts: 'smart-contracts.md'
   - Advanced: 'advanced.md'
   - FAQ: 'faq.md'
-  - API Reference: 'mkapi/api/../neo3'
+  - API Reference: 'mkapi/api/../epicchain'
 
 markdown_extensions:
   - admonition

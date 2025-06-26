@@ -1,29 +1,29 @@
 import unittest
 
-from neo3.wallet import account, scrypt_parameters as scrypt
+from epicchain.wallet import account, scrypt_parameters as scrypt
 
 account_list = [
     {
-        "address": "NRaKbRA5JAEJtfUgJJZzmeDnKvP3pJwKp1",
+        "address": "XRaKbRA5JAEJtfUgJJZzmeDnKvP3pJwKp1",
         "encrypted_key": "6PYKuriAL7pFeVTr3tKksbD1SpKUP7K82vjGuskZ5zpo9EWDhLRW6GcnyL",
-        "password": "city of zion",
+        "password": "epicchain",
         "private_key": "58124574dfcca1a7a958775f6ea94e3d6c392ec3ba125b5bc591dd5e14f05e52",
         "script_hash": "18f13748e08d53c9a164227e1a3e8d8d9e78193e",
         "wif_key": "KzAuju4yBqBhmUzYpfEEppPW8jfxALTsdsUR8hLPv9R3PBD97CUv",
     },
     {
-        "address": "NgPptMp2tcjnXuYbUrTozvwvLExGKk5jXc",
+        "address": "XgPptMp2tcjnXuYbUrTozvwvLExGKk5jXc",
         "encrypted_key": "6PYMEujkLZiJrQ5AK9W4z1BtYZT2U27ZVKrjbEFt8zZh5CJANZdEx21Fyx",
-        "password": "123",
+        "password": "epicchain",
         "private_key": "2032b737522d22e2b6faf30555faa91d95c5aa5113c18f218f45815b6934c558",
         "script_hash": "cfa9032d65b3d0fc1df3956a4ef01666f23ba7e0",
         "wif_key": "KxJJLmU1Nv7igx3RFM4siSvio7wasF3ZzMzi7SrJ1s78QDQeEtjs",
         "scrypt": {"n": 2, "r": 8, "p": 8},
     },
     {
-        "address": "NZMHRJMPbyJJwtXpvS2mYAWcWp4qmZZFx8",
+        "address": "XZMHRJMPbyJJwtXpvS2mYAWcWp4qmZZFx8",
         "encrypted_key": "6PYL44vbRemjfwCJ8qprKKJJiuzcopnJhghPoMLRVJLpymDwm2BNj9v7fq",
-        "password": "neo",
+        "password": "epicchain",
         "private_key": "4c5182d9041f416bee1a6adac6a03f3e0319a83e75e78e6ff739304095791f19",
         "script_hash": "0df27baba6baeeb6834bea0d6c2a78183b416393",
         "wif_key": "Kyn4fA6czAhktoAM9YXKv3m7jtt47AuQxCXqSusnBmj3GsZUZQ6M",
@@ -78,7 +78,7 @@ class AccountCreationTestCase(unittest.TestCase):
             self.assertIsNotNone(acc.public_key)
 
     def test_new_watch_only_account(self):
-        from neo3.core.types import UInt160
+        from epicchain.core.types import UInt160
 
         for testcase in account_list[1:]:
             acc = account.Account.watch_only(

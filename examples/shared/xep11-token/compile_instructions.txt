@@ -1,0 +1,1 @@
+epicchain-go contract compile -i nft.go -c nft.yml -m xep11-token.manifest.json -o xep11-token

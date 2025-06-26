@@ -1,8 +1,8 @@
 import unittest
 import json
 from copy import deepcopy
-from neo3.contracts import abi, manifest, nef, contract
-from neo3.core import cryptography, types, serialization
+from epicchain.contracts import abi, manifest, xef, contract
+from epicchain.core import cryptography, types, serialization
 
 
 class ContractGroupTestCase(unittest.TestCase):
@@ -79,7 +79,7 @@ class ContractPermissionTestCase(unittest.TestCase):
         # if contract_hash is valid.
         dummy_contract_hash = types.UInt160.zero()
         contract_state = contract.ContractState(
-            1, nef.NEF(), manifest.ContractManifest(), 0, dummy_contract_hash
+            1, xef.XEF(), manifest.ContractManifest(), 0, dummy_contract_hash
         )
 
         # setup an allowed permission for a contract with UInt160.zero hash for all methods
@@ -106,7 +106,7 @@ class ContractPermissionTestCase(unittest.TestCase):
 
         dummy_contract_hash = types.UInt160.from_string("01" * 20)
         contract_state = contract.ContractState(
-            1, nef.NEF(), manifest.ContractManifest(), 0, dummy_contract_hash
+            1, xef.XEF(), manifest.ContractManifest(), 0, dummy_contract_hash
         )
 
         signature = cryptography.sign(
@@ -138,7 +138,7 @@ class ContractPermissionTestCase(unittest.TestCase):
         # now we validate 'method' matching
         dummy_contract_hash = types.UInt160.from_string("01" * 20)
         contract_state = contract.ContractState(
-            1, nef.NEF(), manifest.ContractManifest(), 0, dummy_contract_hash
+            1, xef.XEF(), manifest.ContractManifest(), 0, dummy_contract_hash
         )
 
         # setup an allowed permission for a contract with UInt160.zero hash for 2 methods
@@ -402,7 +402,7 @@ class ManifestTestCase(unittest.TestCase):
         )
         cm.abi.methods = [method1]
 
-        # A contract hash is normally created from a combination of transaction sender (UInt160), NEF checksum and manifest.name
+        # A contract hash is normally created from a combination of transaction sender (UInt160), XEF checksum and manifest.name
         # For this test we'll keep it simple and pretend that hash is all zeros
         dummy_contract_hash = types.UInt160.zero()
 

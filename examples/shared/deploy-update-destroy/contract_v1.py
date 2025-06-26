@@ -2,23 +2,23 @@
     This version of the contract has an `add` method that increases the value by 1.
 """
 from typing import Any
-from boa3.builtin import NeoMetadata, metadata, public
-from boa3.builtin.nativecontract.contractmanagement import ContractManagement
+from viper.builtin import EpicChainMetadata, metadata, public
+from viper.builtin.nativecontract.contractmanagement import ContractManagement
 
 
 @metadata
-def manifest_metadata() -> NeoMetadata:
+def manifest_metadata() -> EpicChainMetadata:
     """
     Defines this smart contract's metadata information.
     """
-    meta = NeoMetadata()
+    meta = EpicChainMetadata()
     meta.name = "Example Contract"
     return meta
 
 
 @public(safe=False)
-def update(nef_file: bytes, manifest: bytes, data: Any = None):
-    ContractManagement.update(nef_file, manifest, data)
+def update(xef_file: bytes, manifest: bytes, data: Any = None):
+    ContractManagement.update(xef_file, manifest, data)
 
 
 @public

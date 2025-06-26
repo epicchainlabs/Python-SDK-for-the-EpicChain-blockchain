@@ -1,15 +1,15 @@
 [project]
 name = "epicchain-python-sdk"
 description = "Python SDK for the EpicChain blockchain"
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">= 3.11.0,<= 3.13"
 license = { file = "LICENSE.md" }
-keywords = ["EpicChain", "blockchain", "SDK"]
+keywords = ["EpicChain", "Blockchain", "SDK"]
 authors = [
     { name = "xmoohad", email = "xmoohad@epic-chain.org" },
 ]
 maintainers = [
-    { name = "xmoohad", email = "xmoohad@epic-chain.or" },
+    { name = "xmoohad", email = "xmoohad@epic-chain.org" },
 ]
 dynamic = ["version"]
 dependencies = [
@@ -20,7 +20,7 @@ dependencies = [
     "Events==0.5",
     "jsonschema>=4.19.0",
     "lz4==4.3.2",
-    "neo3crypto==0.4.3",
+    "epicchaincrypto==0.4.3",
     "netaddr>=0.9.0",
     "orjson>=3.9.10",
     "pycryptodome==3.19.0",
@@ -57,7 +57,7 @@ build-backend = "setuptools.build_meta"
 target-version = ['py311']
 
 [tool.setuptools.dynamic]
-version = { attr = "neo3.__version__" }
+version = { attr = "epicchain.__version__" }
 
 [tool.bumpversion]
 current_version = "2.6.0"
@@ -65,7 +65,7 @@ commit = true
 tag = true
 
 [[tool.bumpversion.files]]
-filename = "./neo3/__init__.py"
+filename = "./epicchain/__init__.py"
 search = "__version__ = \"{current_version}\""
 replace = "__version__ = \"{new_version}\""
 
@@ -74,7 +74,7 @@ check_untyped_defs = true
 disable_error_code = "func-returns-value"
 
 [tool.coverage.run]
-source = ["neo3"]
+source = ["epicchain"]
 
 [tool.coverage.report]
-omit = ["neo3/core/cryptography/ecc*"]
+omit = ["epicchain/core/cryptography/ecc*"]

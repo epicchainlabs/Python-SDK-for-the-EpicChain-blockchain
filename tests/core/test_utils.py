@@ -1,6 +1,6 @@
 import unittest
-from neo3.core import utils, serialization, types
-from neo3.core.serialization import BinaryReader, BinaryWriter
+from epicchain.core import utils, serialization, types
+from epicchain.core.serialization import BinaryReader, BinaryWriter
 from enum import IntEnum
 
 
@@ -54,7 +54,7 @@ class VarSizeTestCase(unittest.TestCase):
         fixed_dummy_size = 2
         self.assertEqual(1 + (2 * fixed_dummy_size), utils.get_var_size(iterable))
 
-        # so far NEO only has byte enums, so the length is fixed to 1
+        # so far EpicChain only has byte enums, so the length is fixed to 1
         iterable = [DummyEnum.DEFAULT, DummyEnum.DEFAULT]
         self.assertEqual(1 + 2, utils.get_var_size(iterable))
 
@@ -75,7 +75,6 @@ class VarSizeTestCase(unittest.TestCase):
 
 class ScriptHashTestCase(unittest.TestCase):
     def test_to_script_hash(self):
-        # from https://github.com/neo-project/neo/blob/8e68c3fabf8b7cad3bd27e0c556cbeda17c2b123/tests/Neo.UnitTests/UT_Helper.cs#L35
         data = b"\x42" + b"\x20" * 63
         expected = types.UInt160.from_string(
             "0x2d3b96ae1bcc5a585e075e3b81920210dec16302"

@@ -1,6 +1,6 @@
 import platform
 import unittest
-from neo3.network.convenience import nodeweight, requestinfo, flightinfo
+from epicchain.network.convenience import nodeweight, requestinfo, flightinfo
 
 
 class RequestInfoTestCase(unittest.TestCase):

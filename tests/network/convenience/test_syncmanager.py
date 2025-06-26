@@ -1,9 +1,9 @@
 import asyncio
 import time
 from unittest import IsolatedAsyncioTestCase, mock
-from neo3.network import node
-from neo3.network.convenience import syncmanager, nodemanager, requestinfo, flightinfo
-from neo3 import network_logger
+from epicchain.network import node
+from epicchain.network.convenience import syncmanager, nodemanager, requestinfo, flightinfo
+from epicchain import network_logger
 from datetime import datetime
 
 
@@ -73,7 +73,7 @@ class SyncManagerSyncBlocksTestCase(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.syncmgr._reset_for_test()
         self.nodemgr._reset_for_test()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
 
     async def test_sync_blocks_outstanding_requests(self):
         self.syncmgr.block_requests.update({"1": object()})
@@ -100,7 +100,7 @@ class SyncManagerSyncBlocksTestCase(IsolatedAsyncioTestCase):
         # expected result: 1 flight added
 
         self.syncmgr.block_cache = (self.syncmgr.BLOCK_MAX_CACHE_SIZE - 2) * [None]
-        mock_node = node.NeoNode(object(), object())
+        mock_node = node.EpicChainNode(object(), object())
         mock_node.best_height = 2
         mock_node.request_block_data = mock.AsyncMock()
         self.nodemgr.nodes = [mock_node]
@@ -126,7 +126,7 @@ class SyncManagerCheckTimeoutTestCase(IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         self.syncmgr._reset_for_test()
         self.nodemgr._reset_for_test()
-        node.NeoNode._reset_for_test()
+        node.EpicChainNode._reset_for_test()
 
     async def test_no_outstanding_request(self):
         self.assertEqual(-1, await self.syncmgr._check_timeout())
@@ -187,7 +187,7 @@ class SyncManagerCheckTimeoutTestCase(IsolatedAsyncioTestCase):
         self.assertEqual(-3, result)
 
         # now we "connect" a new node
-        mock_node = node.NeoNode(object(), object())
+        mock_node = node.EpicChainNode(object(), object())
         mock_node.best_height = 10
         mock_node_id = 789
         mock_node.nodeid = mock_node_id
@@ -283,7 +283,7 @@ class SyncManagerVarious(IsolatedAsyncioTestCase):
         self.assertEqual(request_info, self.syncmgr.block_requests.get(1, None))
 
         # next test a valid scenario (outstanding request and receiving a block from the right node)
-        mocked_node = node.NeoNode(object(), object())
+        mocked_node = node.EpicChainNode(object(), object())
         mocked_node.nodeweight.append_new_speed = mock.Mock()
         mocked_node.nodeid = 456
         self.nodemgr.nodes = [mocked_node]

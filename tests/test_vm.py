@@ -1,7 +1,7 @@
 import unittest
-from neo3 import vm
-from neo3.core import types, cryptography
-from neo3.contracts import callflags
+from epicchain import vm
+from epicchain.core import types, cryptography
+from epicchain.contracts import callflags
 
 
 class ScriptBuilderTestCase(unittest.TestCase):
@@ -262,7 +262,7 @@ class ScriptBuilderTestCase(unittest.TestCase):
 
 class SyscallsTestCase(unittest.TestCase):
     def test_find_by_name(self):
-        name = "System.Runtime.BurnGas"
+        name = "System.Runtime.BurnEpicPulse"
         s = vm.Syscalls.get_by_name(name)
         self.assertEqual(name, s.name)
         self.assertIsNone(vm.Syscalls.get_by_name("fake"))
@@ -278,23 +278,23 @@ class SyscallsTestCase(unittest.TestCase):
 
     def test_equality(self):
         # allow to compare against ints (should match the syscall number)
-        burn_gas_number = 3163314883
+        burn_xpp_number = 3163314883
         fake_number = 123
-        self.assertEqual(burn_gas_number, vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS)
-        self.assertNotEqual(fake_number, vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS)
+        self.assertEqual(burn_xpp_number, vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP)
+        self.assertNotEqual(fake_number, vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP)
 
         # allow to compare against strings (should match the syscall name)
-        name = "System.Runtime.BurnGas"
+        name = "System.Runtime.BurnEpicPulse"
         name_wrong = "nope"
-        self.assertEqual(name, vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS)
-        self.assertNotEqual(name_wrong, vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS)
+        self.assertEqual(name, vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP)
+        self.assertNotEqual(name_wrong, vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP)
 
         # compare against instances
         self.assertEqual(
-            vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS, vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS
+            vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP, vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP
         )
         self.assertNotEqual(
-            vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS, vm.Syscalls.SYSTEM_CONTRACT_CALL
+            vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP, vm.Syscalls.SYSTEM_CONTRACT_CALL
         )
 
         # compare against byte sequences
@@ -305,4 +305,4 @@ class SyscallsTestCase(unittest.TestCase):
             b"\x01\x01\x01\x01", vm.Syscalls.SYSTEM_CRYPTO_CHECK_STANDARD_ACCOUNT
         )
 
-        self.assertNotEqual(vm.Syscalls.SYSTEM_RUNTIME_BURN_GAS, None)
+        self.assertNotEqual(vm.Syscalls.SYSTEM_RUNTIME_BURN_XPP, None)

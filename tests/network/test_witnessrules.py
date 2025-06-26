@@ -1,6 +1,6 @@
 import unittest
-from neo3.network.payloads import verification
-from neo3.core import types, cryptography
+from epicchain.network.payloads import verification
+from epicchain.core import types, cryptography
 
 
 class WitnessRuleTestCase(unittest.TestCase):

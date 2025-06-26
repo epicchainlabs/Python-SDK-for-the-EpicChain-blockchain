@@ -2,7 +2,7 @@ import json
 import os.path
 import unittest
 
-from neo3.wallet import wallet, scrypt_parameters as scrypt, account
+from epicchain.wallet import wallet, scrypt_parameters as scrypt, account
 
 
 class WalletCreationTestCase(unittest.TestCase):
@@ -47,7 +47,7 @@ class WalletCreationTestCase(unittest.TestCase):
         if os.path.isfile(wallet_path):
             os.remove(wallet_path)
 
-        test_wallet = wallet.DiskWallet.default(wallet_path, "NEP6 Wallet")
+        test_wallet = wallet.DiskWallet.default(wallet_path, "XEP6 Wallet")
         test_wallet.save()
         self.assertTrue(os.path.isfile(wallet_path))
 
@@ -68,7 +68,7 @@ class WalletCreationTestCase(unittest.TestCase):
             os.remove(wallet_path)
 
         # save using context manager
-        with wallet.DiskWallet.default(wallet_path, "NEP6 Wallet"):
+        with wallet.DiskWallet.default(wallet_path, "XEP6 Wallet"):
             pass
         self.assertTrue(os.path.isfile(wallet_path))
 

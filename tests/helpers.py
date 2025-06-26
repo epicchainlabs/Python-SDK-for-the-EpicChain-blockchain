@@ -1,5 +1,5 @@
-from neo3.core import serialization
-from neo3.core.serialization import BinaryReader, BinaryWriter
+from epicchain.core import serialization
+from epicchain.core.serialization import BinaryReader, BinaryWriter
 
 
 class SerializableObject(serialization.ISerializable):

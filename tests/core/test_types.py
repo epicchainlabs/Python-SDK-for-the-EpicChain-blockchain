@@ -1,7 +1,7 @@
 from unittest import TestCase
-from neo3.core.types.uint import _UIntBase
-from neo3.core.types import UInt160, UInt256
-from neo3.core import serialization
+from epicchain.core.types.uint import _UIntBase
+from epicchain.core.types import UInt160, UInt256
+from epicchain.core import serialization
 
 
 class UIntBase(_UIntBase):

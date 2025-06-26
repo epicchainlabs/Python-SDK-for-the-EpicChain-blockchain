@@ -1,6 +1,6 @@
 import unittest
-from neo3.core import types
-from neo3.api.wrappers import _check_address_and_convert
+from epicchain.core import types
+from epicchain.api.wrappers import _check_address_and_convert
 
 
 class WrapperUtilsTest(unittest.TestCase):
@@ -13,7 +13,7 @@ class WrapperUtilsTest(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             _check_address_and_convert(object())
         self.assertEqual(
-            "Input is of type <class 'object'> expected UInt160 or NeoAddress(str)",
+            "Input is of type <class 'object'> expected UInt160 or EpicChainAddress(str)",
             str(context.exception),
         )
 

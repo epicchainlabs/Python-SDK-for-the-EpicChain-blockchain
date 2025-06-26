@@ -1,5 +1,5 @@
 import unittest
-from neo3.core import serialization
+from epicchain.core import serialization
 
 
 class SerializableObj(serialization.ISerializable):

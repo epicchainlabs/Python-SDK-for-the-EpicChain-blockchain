@@ -1,6 +1,6 @@
 import unittest
 import base64
-from neo3.network.payloads.transaction import Transaction
+from epicchain.network.payloads.transaction import Transaction
 
 
 class TestPayloadIssues(unittest.TestCase):
