@@ -222,7 +222,7 @@ Follow the guide in `CONTRIBUTING.md`.
 
 For assistance, questions, or suggestions:
 
-* 📧 Email: `support@epicchain.com`
+* 📧 Email: `support@epic-chain.org`
 * 🛠 GitHub: [Submit issues](https://github.com/epicchainlabs/Python-SDK-for-the-EpicChain-blockchain/issues)
 * 📚 Docs & API Reference: Coming soon at `https://epic-chain.org/docs,`
 
